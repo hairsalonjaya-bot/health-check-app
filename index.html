@@ -2,755 +2,683 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>健康診断アプリ</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>健康診断スケジュール</title>
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Meiryo', sans-serif; background: #f0f2f5; color: #333; min-height: 100vh; padding-bottom: 70px; }
-.header { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff; padding: 16px 20px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,.15); }
-.header h1 { font-size: 18px; font-weight: 700; }
-.header-sub { font-size: 12px; opacity: .8; margin-top: 2px; }
-.nav { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; display: flex; border-top: 1px solid #e0e0e0; z-index: 100; box-shadow: 0 -2px 8px rgba(0,0,0,.08); }
-.nav-item { flex: 1; text-align: center; padding: 8px 4px; font-size: 11px; color: #888; cursor: pointer; transition: color .2s; }
-.nav-item.active { color: #2563eb; font-weight: 700; }
-.nav-item svg { display: block; margin: 0 auto 2px; }
-.page { display: none; padding: 16px; max-width: 600px; margin: 0 auto; }
-.page.active { display: block; }
-.card { background: #fff; border-radius: 12px; padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
-.card-title { font-size: 14px; font-weight: 700; color: #2563eb; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
-.alert { border-radius: 10px; padding: 12px 14px; margin-bottom: 10px; font-size: 13px; font-weight: 600; }
-.alert-red { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
-.alert-yellow { background: #fffbeb; color: #d97706; border: 1px solid #fde68a; }
-.alert-green { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
-.alert-blue { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
-.countdown { font-size: 28px; font-weight: 800; }
-.exam-list { list-style: none; }
-.exam-list li { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f0f0f0; font-size: 13px; }
-.exam-list li:last-child { border-bottom: none; }
-.badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 700; }
-.badge-red { background: #fef2f2; color: #dc2626; }
-.badge-yellow { background: #fffbeb; color: #d97706; }
-.badge-green { background: #f0fdf4; color: #16a34a; }
-.form-section { margin-bottom: 16px; }
-.form-section-title { font-size: 13px; font-weight: 700; color: #64748b; margin-bottom: 8px; padding-bottom: 4px; border-bottom: 2px solid #e2e8f0; }
-.form-row { display: flex; gap: 8px; margin-bottom: 8px; }
-.form-group { flex: 1; }
-.form-group label { display: block; font-size: 11px; color: #64748b; margin-bottom: 3px; }
-.form-group input, .form-group select, .form-group textarea { width: 100%; padding: 8px 10px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; background: #fff; }
-.form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,.1); }
-.form-group textarea { resize: vertical; min-height: 60px; }
-.form-group input.warn { border-color: #d97706; background: #fffbeb; }
-.form-group input.danger { border-color: #dc2626; background: #fef2f2; }
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 20px; border: none; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; transition: all .2s; width: 100%; }
-.btn-primary { background: #2563eb; color: #fff; }
-.btn-primary:hover { background: #1d4ed8; }
-.btn-secondary { background: #f1f5f9; color: #475569; }
-.btn-secondary:hover { background: #e2e8f0; }
-.btn-danger { background: #fef2f2; color: #dc2626; }
-.btn-danger:hover { background: #fee2e2; }
-.btn-sm { padding: 6px 12px; font-size: 12px; width: auto; }
-.photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; }
-.photo-grid img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 8px; cursor: pointer; }
-.photo-input-area { border: 2px dashed #d1d5db; border-radius: 10px; padding: 20px; text-align: center; cursor: pointer; color: #94a3b8; font-size: 13px; margin-top: 8px; }
-.photo-input-area:hover { border-color: #2563eb; color: #2563eb; }
-.history-item { padding: 12px 0; border-bottom: 1px solid #f0f0f0; cursor: pointer; }
-.history-item:last-child { border-bottom: none; }
-.history-item-date { font-size: 15px; font-weight: 700; }
-.history-item-summary { font-size: 12px; color: #64748b; margin-top: 3px; }
-.detail-table { width: 100%; font-size: 13px; }
-.detail-table td { padding: 6px 4px; border-bottom: 1px solid #f0f0f0; }
-.detail-table td:first-child { color: #64748b; width: 40%; }
-.detail-table td:nth-child(2) { font-weight: 600; }
-.detail-table td:nth-child(3) { font-size: 11px; color: #94a3b8; }
-.trend-up { color: #dc2626; }
-.trend-down { color: #16a34a; }
-.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.7); z-index: 200; align-items: center; justify-content: center; }
-.modal-overlay.active { display: flex; }
-.modal-overlay img { max-width: 95vw; max-height: 90vh; border-radius: 8px; }
-.interval-item { display: flex; align-items: center; gap: 8px; padding: 10px 0; border-bottom: 1px solid #f0f0f0; font-size: 13px; }
-.interval-item:last-child { border-bottom: none; }
-.interval-item input[type="text"] { flex: 1; padding: 6px 8px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 13px; }
-.interval-item input[type="number"] { width: 60px; padding: 6px 8px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 13px; text-align: center; }
-.interval-item select { padding: 6px 8px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 13px; }
-.interval-item button { padding: 4px 8px; border: none; background: none; color: #dc2626; cursor: pointer; font-size: 16px; }
-.tab-bar { display: flex; gap: 4px; margin-bottom: 12px; }
-.tab-btn { flex: 1; padding: 8px; border: none; background: #f1f5f9; color: #64748b; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; }
-.tab-btn.active { background: #2563eb; color: #fff; }
-.empty-state { text-align: center; padding: 40px 20px; color: #94a3b8; }
-.empty-state svg { margin-bottom: 12px; }
-.empty-state p { font-size: 14px; }
-.judgment-badge { display: inline-block; width: 32px; height: 32px; line-height: 32px; text-align: center; border-radius: 50%; font-weight: 800; font-size: 16px; }
-.judgment-A { background: #dcfce7; color: #16a34a; }
-.judgment-B { background: #dbeafe; color: #2563eb; }
-.judgment-C { background: #fef9c3; color: #ca8a04; }
-.judgment-D { background: #fed7aa; color: #ea580c; }
-.judgment-E { background: #fecaca; color: #dc2626; }
-.ref-range { font-size: 10px; color: #94a3b8; }
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Meiryo',sans-serif;background:#f0f2f5;color:#333;min-height:100vh;padding-bottom:68px}
+.header{background:linear-gradient(135deg,#0d9488,#0f766e);color:#fff;padding:14px 20px;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.header h1{font-size:17px;font-weight:700}
+.header-sub{font-size:11px;opacity:.8;margin-top:2px}
+.nav{position:fixed;bottom:0;left:0;right:0;background:#fff;display:flex;border-top:1px solid #e0e0e0;z-index:100;box-shadow:0 -2px 8px rgba(0,0,0,.08)}
+.nav-item{flex:1;text-align:center;padding:7px 4px;font-size:10px;color:#888;cursor:pointer;transition:color .2s}
+.nav-item.active{color:#0d9488;font-weight:700}
+.nav-item svg{display:block;margin:0 auto 2px}
+.page{display:none;padding:14px;max-width:600px;margin:0 auto}
+.page.active{display:block}
+.card{background:#fff;border-radius:12px;padding:14px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.card-title{font-size:13px;font-weight:700;color:#0d9488;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.alert{border-radius:10px;padding:11px 13px;margin-bottom:8px;font-size:12px;font-weight:600}
+.alert-red{background:#fef2f2;color:#dc2626;border:1px solid #fecaca}
+.alert-yellow{background:#fffbeb;color:#d97706;border:1px solid #fde68a}
+.alert-green{background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0}
+.schedule-item{padding:12px 0;border-bottom:1px solid #f0f0f0}
+.schedule-item:last-child{border-bottom:none}
+.schedule-name{font-size:14px;font-weight:700}
+.schedule-meta{font-size:11px;color:#64748b;margin-top:3px}
+.schedule-hospital{font-size:11px;color:#94a3b8;margin-top:1px}
+.badge{display:inline-block;padding:3px 10px;border-radius:10px;font-size:11px;font-weight:700;margin-top:4px}
+.badge-red{background:#fef2f2;color:#dc2626}
+.badge-yellow{background:#fffbeb;color:#d97706}
+.badge-green{background:#f0fdf4;color:#16a34a}
+.badge-blue{background:#eff6ff;color:#2563eb}
+.form-group{margin-bottom:10px}
+.form-group label{display:block;font-size:11px;color:#64748b;margin-bottom:3px;font-weight:600}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:9px 10px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;background:#fff}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:#0d9488;box-shadow:0 0 0 3px rgba(13,148,136,.1)}
+.form-group textarea{resize:vertical;min-height:50px}
+.form-row{display:flex;gap:8px}
+.form-row .form-group{flex:1}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 18px;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;width:100%}
+.btn-primary{background:#0d9488;color:#fff}
+.btn-primary:hover{background:#0f766e}
+.btn-secondary{background:#f1f5f9;color:#475569}
+.btn-danger{background:#fef2f2;color:#dc2626}
+.btn-sm{padding:6px 12px;font-size:12px;width:auto}
+.checkbox-grid{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.checkbox-item{display:flex;align-items:center;gap:4px;font-size:13px;background:#f8fafc;padding:6px 10px;border-radius:8px;border:1px solid #e2e8f0;cursor:pointer}
+.checkbox-item input{margin:0}
+.checkbox-item.checked{background:#f0fdfa;border-color:#0d9488;color:#0d9488}
+.collapsible-header{display:flex;justify-content:space-between;align-items:center;cursor:pointer;padding:10px 0;font-size:13px;font-weight:700;color:#64748b}
+.collapsible-header::after{content:'▼';font-size:10px;transition:transform .2s}
+.collapsible-header.open::after{transform:rotate(180deg)}
+.collapsible-body{display:none;padding-top:8px}
+.collapsible-body.open{display:block}
+.section-title{font-size:12px;font-weight:700;color:#64748b;margin:10px 0 6px;padding-bottom:3px;border-bottom:2px solid #e2e8f0}
+.history-item{padding:12px 0;border-bottom:1px solid #f0f0f0;cursor:pointer}
+.history-item:last-child{border-bottom:none}
+.history-date{font-size:14px;font-weight:700}
+.history-badges{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.history-hospital{font-size:11px;color:#94a3b8;margin-top:2px}
+.detail-table{width:100%;font-size:12px}
+.detail-table td{padding:5px 4px;border-bottom:1px solid #f0f0f0}
+.detail-table td:first-child{color:#64748b;width:40%}
+.detail-table td:nth-child(2){font-weight:600}
+.trend-up{color:#dc2626}.trend-down{color:#16a34a}
+.interval-item{display:flex;align-items:center;gap:6px;padding:8px 0;border-bottom:1px solid #f0f0f0;font-size:13px}
+.interval-item:last-child{border-bottom:none}
+.interval-item input[type="text"]{flex:1;padding:6px 8px;border:1px solid #d1d5db;border-radius:6px;font-size:13px}
+.interval-item input[type="number"]{width:55px;padding:6px;border:1px solid #d1d5db;border-radius:6px;font-size:13px;text-align:center}
+.interval-item button{padding:4px 8px;border:none;background:none;color:#dc2626;cursor:pointer;font-size:15px}
+.photo-area{border:2px dashed #d1d5db;border-radius:10px;padding:16px;text-align:center;cursor:pointer;color:#94a3b8;font-size:12px;margin-top:6px}
+.photo-area:hover{border-color:#0d9488;color:#0d9488}
+.photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px}
+.photo-grid img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:6px;cursor:pointer}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center}
+.modal.active{display:flex}
+.modal img{max-width:95vw;max-height:90vh;border-radius:8px}
+.ocr-btn{background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;border-radius:8px;padding:10px;text-align:center;cursor:pointer;font-size:12px;font-weight:600;margin-top:6px}
+.ocr-btn:hover{background:#dbeafe}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid #bfdbfe;border-top-color:#2563eb;border-radius:50%;animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:30px 20px;color:#94a3b8;font-size:13px}
+.gas-section{margin-top:10px;padding-top:10px;border-top:1px solid #f0f0f0}
+.gas-section label{font-size:11px;color:#64748b;font-weight:600}
+.gas-section input{width:100%;padding:8px;border:1px solid #d1d5db;border-radius:8px;font-size:12px;margin-top:3px}
 </style>
 </head>
 <body>
 
 <div class="header">
-  <h1>健康診断アプリ</h1>
-  <div class="header-sub" id="headerSub">あなたの健康を記録・管理</div>
+  <h1>健康診断スケジュール</h1>
+  <div class="header-sub" id="headerSub">受診予定を管理・通知</div>
 </div>
 
-<!-- ダッシュボード -->
-<div class="page active" id="pageDashboard">
-  <div id="dashAlerts"></div>
-  <div class="card" id="dashLatest"></div>
+<!-- ホーム -->
+<div class="page active" id="pageHome">
+  <div id="homeAlerts"></div>
   <div class="card">
-    <div class="card-title">📋 検査スケジュール</div>
-    <ul class="exam-list" id="examScheduleList"></ul>
+    <div class="card-title">📋 受診スケジュール</div>
+    <div id="scheduleList"></div>
   </div>
 </div>
 
-<!-- 新規入力 -->
+<!-- 受診記録入力 -->
 <div class="page" id="pageInput">
-  <div class="tab-bar">
-    <button class="tab-btn active" onclick="switchInputTab('checkup')">健康診断結果</button>
-    <button class="tab-btn" onclick="switchInputTab('exam')">個別検査</button>
+  <div class="card">
+    <div class="card-title">📝 受診記録</div>
+    <div class="form-group">
+      <label>受診日</label>
+      <input type="date" id="inputDate">
+    </div>
+    <div class="form-group">
+      <label>病院名</label>
+      <input type="text" id="inputHospital" placeholder="○○クリニック" list="hospitalList">
+      <datalist id="hospitalList"></datalist>
+    </div>
+    <div class="form-group">
+      <label>受けた検査（複数選択可）</label>
+      <div class="checkbox-grid" id="examCheckboxes"></div>
+    </div>
+    <div class="form-group">
+      <label>メモ</label>
+      <textarea id="inputMemo" placeholder="気になったこと、医師のコメントなど"></textarea>
+    </div>
   </div>
 
-  <div id="inputCheckup">
-    <div class="card">
-      <div class="card-title">📅 受診情報</div>
+  <!-- 写真 & OCR -->
+  <div class="card">
+    <div class="card-title">📷 結果用紙</div>
+    <div class="photo-area" onclick="document.getElementById('photoInput').click()">
+      タップして写真を追加
+    </div>
+    <input type="file" id="photoInput" accept="image/*" capture="environment" multiple style="display:none" onchange="handlePhotos(event)">
+    <div class="photo-grid" id="photoPreview"></div>
+    <div class="ocr-btn" id="ocrBtn" onclick="runOCR()" style="display:none">
+      🤖 写真から数値を自動読み取り
+    </div>
+  </div>
+
+  <!-- 数値記録（折りたたみ） -->
+  <div class="card">
+    <div class="collapsible-header" onclick="toggleCollapsible(this)">
+      📊 検査数値を記録する（オプション）
+    </div>
+    <div class="collapsible-body" id="numericFields">
+      <div class="section-title">身体計測</div>
       <div class="form-row">
-        <div class="form-group"><label>受診日</label><input type="date" id="examDate"></div>
-        <div class="form-group"><label>総合判定</label>
-          <select id="judgment"><option value="">---</option><option>A</option><option>B</option><option>C</option><option>D</option><option>E</option></select>
-        </div>
+        <div class="form-group"><label>身長(cm)</label><input type="number" step="0.1" id="v_height" oninput="calcBMI()"></div>
+        <div class="form-group"><label>体重(kg)</label><input type="number" step="0.1" id="v_weight" oninput="calcBMI()"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>BMI</label><input type="text" id="v_bmi" readonly></div>
+        <div class="form-group"><label>腹囲(cm)</label><input type="number" step="0.1" id="v_waist"></div>
+      </div>
+      <div class="section-title">血圧</div>
+      <div class="form-row">
+        <div class="form-group"><label>最高(mmHg)</label><input type="number" id="v_bpHigh"></div>
+        <div class="form-group"><label>最低(mmHg)</label><input type="number" id="v_bpLow"></div>
+      </div>
+      <div class="section-title">視力</div>
+      <div class="form-row">
+        <div class="form-group"><label>右</label><input type="number" step="0.01" id="v_visionR"></div>
+        <div class="form-group"><label>左</label><input type="number" step="0.01" id="v_visionL"></div>
+      </div>
+      <div class="section-title">血液検査</div>
+      <div class="form-row">
+        <div class="form-group"><label>白血球(/μL)</label><input type="number" id="v_wbc"></div>
+        <div class="form-group"><label>赤血球(万/μL)</label><input type="number" id="v_rbc"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Hb(g/dL)</label><input type="number" step="0.1" id="v_hb"></div>
+        <div class="form-group"><label>Ht(%)</label><input type="number" step="0.1" id="v_ht"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>血小板(万/μL)</label><input type="number" step="0.1" id="v_plt"></div>
+        <div class="form-group"><label></label></div>
+      </div>
+      <div class="section-title">肝機能</div>
+      <div class="form-row">
+        <div class="form-group"><label>AST(U/L)</label><input type="number" id="v_ast"></div>
+        <div class="form-group"><label>ALT(U/L)</label><input type="number" id="v_alt"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>γ-GTP(U/L)</label><input type="number" id="v_ggt"></div>
+        <div class="form-group"><label></label></div>
+      </div>
+      <div class="section-title">脂質</div>
+      <div class="form-row">
+        <div class="form-group"><label>総コレステロール</label><input type="number" id="v_tc"></div>
+        <div class="form-group"><label>HDL</label><input type="number" id="v_hdl"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>LDL</label><input type="number" id="v_ldl"></div>
+        <div class="form-group"><label>中性脂肪</label><input type="number" id="v_tg"></div>
+      </div>
+      <div class="section-title">糖代謝</div>
+      <div class="form-row">
+        <div class="form-group"><label>空腹時血糖</label><input type="number" id="v_glucose"></div>
+        <div class="form-group"><label>HbA1c(%)</label><input type="number" step="0.1" id="v_hba1c"></div>
+      </div>
+      <div class="section-title">腎機能</div>
+      <div class="form-row">
+        <div class="form-group"><label>クレアチニン</label><input type="number" step="0.01" id="v_cre"></div>
+        <div class="form-group"><label>eGFR</label><input type="number" step="0.1" id="v_egfr"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>尿酸</label><input type="number" step="0.1" id="v_ua"></div>
+        <div class="form-group"><label></label></div>
+      </div>
+      <div class="section-title">尿検査</div>
+      <div class="form-row">
+        <div class="form-group"><label>尿蛋白</label><select id="v_uProtein"><option value="">---</option><option>(-)</option><option>(±)</option><option>(+)</option><option>(2+)</option><option>(3+)</option></select></div>
+        <div class="form-group"><label>尿糖</label><select id="v_uGlucose"><option value="">---</option><option>(-)</option><option>(±)</option><option>(+)</option><option>(2+)</option><option>(3+)</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>尿潜血</label><select id="v_uBlood"><option value="">---</option><option>(-)</option><option>(±)</option><option>(+)</option><option>(2+)</option><option>(3+)</option></select></div>
+        <div class="form-group"><label>総合判定</label><select id="v_judgment"><option value="">---</option><option>A</option><option>B</option><option>C</option><option>D</option><option>E</option></select></div>
+      </div>
+      <div class="form-group">
+        <label>心電図所見</label>
+        <textarea id="v_ecg" placeholder="所見を入力"></textarea>
       </div>
     </div>
-
-    <div class="card">
-      <div class="form-section">
-        <div class="form-section-title">身体計測</div>
-        <div class="form-row">
-          <div class="form-group"><label>身長 (cm)</label><input type="number" step="0.1" id="height" oninput="calcBMI()"></div>
-          <div class="form-group"><label>体重 (kg)</label><input type="number" step="0.1" id="weight" oninput="calcBMI()"></div>
-        </div>
-        <div class="form-row">
-          <div class="form-group"><label>BMI</label><input type="text" id="bmi" readonly></div>
-          <div class="form-group"><label>腹囲 (cm)</label><input type="number" step="0.1" id="waist"></div>
-        </div>
-      </div>
-      <div class="form-section">
-        <div class="form-section-title">血圧</div>
-        <div class="form-row">
-          <div class="form-group"><label>最高 (mmHg)</label><input type="number" id="bpHigh"></div>
-          <div class="form-group"><label>最低 (mmHg)</label><input type="number" id="bpLow"></div>
-        </div>
-      </div>
-      <div class="form-section">
-        <div class="form-section-title">視力</div>
-        <div class="form-row">
-          <div class="form-group"><label>右</label><input type="number" step="0.01" id="visionR"></div>
-          <div class="form-group"><label>左</label><input type="number" step="0.01" id="visionL"></div>
-        </div>
-      </div>
-      <div class="form-section">
-        <div class="form-section-title">聴力</div>
-        <div class="form-row">
-          <div class="form-group"><label>右</label><select id="hearingR"><option value="">---</option><option>異常なし</option><option>所見あり</option></select></div>
-          <div class="form-group"><label>左</label><select id="hearingL"><option value="">---</option><option>異常なし</option><option>所見あり</option></select></div>
-        </div>
-      </div>
-      <div class="form-section">
-        <div class="form-section-title">血液検査</div>
-        <div class="form-row">
-          <div class="form-group"><label>白血球 (/μL)</label><input type="number" id="wbc"></div>
-          <div class="form-group"><label>赤血球 (万/μL)</label><input type="number" step="1" id="rbc"></div>
-        </div>
-        <div class="form-row">
-          <div class="form-group"><label>ヘモグロビン (g/dL)</label><input type="number" step="0.1" id="hb"></div>
-          <div class="form-group"><label>ヘマトクリット (%)</label><input type="number" step="0.1" id="ht"></div>
-        </div>
-        <div class="form-row">
-          <div class="form-group"><label>血小板 (万/μL)</label><input type="number" step="0.1" id="plt"></div>
-          <div class="form-group"><label></label></div>
-        </div>
-      </div>
-      <div class="form-section">
-        <div class="form-section-title">肝機能</div>
-        <div class="form-row">
-          <div class="form-group"><label>AST(GOT) (U/L)</label><input type="number" id="ast"></div>
-          <div class="form-group"><label>ALT(GPT) (U/L)</label><input type="number" id="alt"></div>
-        </div>
-        <div class="form-row">
-          <div class="form-group"><label>γ-GTP (U/L)</label><input type="number" id="ggt"></div>
-          <div class="form-group"><label></label></div>
-        </div>
-      </div>
-      <div class="form-section">
-        <div class="form-section-title">脂質</div>
-        <div class="form-row">
-          <div class="form-group"><label>総コレステロール (mg/dL)</label><input type="number" id="tc"></div>
-          <div class="form-group"><label>HDL (mg/dL)</label><input type="number" id="hdl"></div>
-        </div>
-        <div class="form-row">
-          <div class="form-group"><label>LDL (mg/dL)</label><input type="number" id="ldl"></div>
-          <div class="form-group"><label>中性脂肪 (mg/dL)</label><input type="number" id="tg"></div>
-        </div>
-      </div>
-      <div class="form-section">
-        <div class="form-section-title">糖代謝</div>
-        <div class="form-row">
-          <div class="form-group"><label>空腹時血糖 (mg/dL)</label><input type="number" id="glucose"></div>
-          <div class="form-group"><label>HbA1c (%)</label><input type="number" step="0.1" id="hba1c"></div>
-        </div>
-      </div>
-      <div class="form-section">
-        <div class="form-section-title">腎機能</div>
-        <div class="form-row">
-          <div class="form-group"><label>クレアチニン (mg/dL)</label><input type="number" step="0.01" id="cre"></div>
-          <div class="form-group"><label>eGFR (mL/min)</label><input type="number" step="0.1" id="egfr"></div>
-        </div>
-        <div class="form-row">
-          <div class="form-group"><label>尿酸 (mg/dL)</label><input type="number" step="0.1" id="ua"></div>
-          <div class="form-group"><label></label></div>
-        </div>
-      </div>
-      <div class="form-section">
-        <div class="form-section-title">尿検査</div>
-        <div class="form-row">
-          <div class="form-group"><label>尿蛋白</label><select id="uProtein"><option value="">---</option><option>(-)</option><option>(±)</option><option>(+)</option><option>(2+)</option><option>(3+)</option></select></div>
-          <div class="form-group"><label>尿糖</label><select id="uGlucose"><option value="">---</option><option>(-)</option><option>(±)</option><option>(+)</option><option>(2+)</option><option>(3+)</option></select></div>
-        </div>
-        <div class="form-row">
-          <div class="form-group"><label>尿潜血</label><select id="uBlood"><option value="">---</option><option>(-)</option><option>(±)</option><option>(+)</option><option>(2+)</option><option>(3+)</option></select></div>
-          <div class="form-group"><label></label></div>
-        </div>
-      </div>
-      <div class="form-section">
-        <div class="form-section-title">心電図・その他</div>
-        <div class="form-group"><label>心電図所見</label><textarea id="ecg" placeholder="所見を入力"></textarea></div>
-        <div class="form-group" style="margin-top:8px"><label>医師コメント</label><textarea id="doctorComment" placeholder="医師のコメントを入力"></textarea></div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title">📷 健康診断結果の写真</div>
-      <div class="photo-input-area" onclick="document.getElementById('photoInput').click()">
-        タップして写真を追加
-      </div>
-      <input type="file" id="photoInput" accept="image/*" capture="environment" multiple style="display:none" onchange="handlePhotos(event)">
-      <div class="photo-grid" id="photoPreview"></div>
-    </div>
-
-    <button class="btn btn-primary" onclick="saveCheckup()" style="margin-top:8px">💾 保存する</button>
   </div>
 
-  <div id="inputExam" style="display:none">
-    <div class="card">
-      <div class="card-title">🔬 個別検査の記録</div>
-      <div class="form-group"><label>検査種別</label>
-        <select id="examType" onchange="onExamTypeChange()">
-          <option value="">選択してください</option>
-        </select>
-      </div>
-      <div class="form-group" style="margin-top:8px"><label>受診日</label><input type="date" id="examItemDate"></div>
-      <div class="form-group" style="margin-top:8px"><label>メモ</label><textarea id="examMemo" placeholder="結果や所見を入力"></textarea></div>
-      <button class="btn btn-primary" style="margin-top:12px" onclick="saveExamRecord()">💾 検査記録を保存</button>
-    </div>
-  </div>
+  <button class="btn btn-primary" onclick="saveRecord()" style="margin-top:6px">💾 保存する</button>
 </div>
 
 <!-- 履歴 -->
 <div class="page" id="pageHistory">
-  <div class="tab-bar">
-    <button class="tab-btn active" onclick="switchHistoryTab('checkup')">健康診断</button>
-    <button class="tab-btn" onclick="switchHistoryTab('exam')">個別検査</button>
+  <div class="card">
+    <div class="card-title">📅 受診履歴</div>
+    <div class="form-group" style="margin-bottom:8px">
+      <select id="historyFilter" onchange="renderHistory()" style="font-size:12px;padding:6px">
+        <option value="">すべて表示</option>
+      </select>
+    </div>
+    <div id="historyList"></div>
   </div>
-  <div id="historyCheckupList"></div>
-  <div id="historyExamList" style="display:none"></div>
 </div>
 
 <!-- 詳細 -->
 <div class="page" id="pageDetail">
-  <button class="btn btn-secondary btn-sm" onclick="showPage('pageHistory')" style="margin-bottom:12px">← 戻る</button>
+  <button class="btn btn-secondary btn-sm" onclick="showPage('pageHistory')" style="margin-bottom:10px">← 戻る</button>
   <div id="detailContent"></div>
 </div>
 
 <!-- 設定 -->
 <div class="page" id="pageSettings">
   <div class="card">
-    <div class="card-title">⚙️ 検査スケジュール設定</div>
-    <p style="font-size:12px;color:#64748b;margin-bottom:10px">検査種別ごとに受診間隔を設定できます</p>
+    <div class="card-title">⚙️ 検査種別・受診間隔</div>
+    <p style="font-size:11px;color:#64748b;margin-bottom:8px">検査ごとに受診間隔を設定</p>
     <div id="intervalList"></div>
-    <div style="margin-top:12px;display:flex;gap:8px">
-      <input type="text" id="newExamName" placeholder="検査名を入力" style="flex:1;padding:8px;border:1px solid #d1d5db;border-radius:8px;font-size:13px">
+    <div style="margin-top:10px;display:flex;gap:6px">
+      <input type="text" id="newExamName" placeholder="検査名を入力" style="flex:1;padding:7px;border:1px solid #d1d5db;border-radius:8px;font-size:12px">
       <button class="btn btn-secondary btn-sm" onclick="addExamType()">＋追加</button>
     </div>
   </div>
+
+  <div class="card">
+    <div class="card-title">🔗 GAS連携</div>
+    <p style="font-size:11px;color:#64748b;margin-bottom:8px">LINE通知・写真OCRに必要</p>
+    <div class="form-group">
+      <label>GAS WebアプリURL</label>
+      <input type="text" id="gasUrl" placeholder="https://script.google.com/macros/s/..." oninput="saveGasUrl()">
+    </div>
+    <button class="btn btn-secondary" onclick="syncToGAS()" style="margin-bottom:6px">📤 スケジュールをGASに同期</button>
+    <button class="btn btn-secondary" onclick="testNotify()">🔔 テスト通知を送信</button>
+  </div>
+
   <div class="card">
     <div class="card-title">📦 データ管理</div>
-    <button class="btn btn-secondary" onclick="exportData()" style="margin-bottom:8px">📤 データをエクスポート</button>
-    <button class="btn btn-secondary" onclick="document.getElementById('importInput').click()">📥 データをインポート</button>
+    <button class="btn btn-secondary" onclick="exportData()" style="margin-bottom:6px">📤 エクスポート</button>
+    <button class="btn btn-secondary" onclick="document.getElementById('importInput').click()" style="margin-bottom:6px">📥 インポート</button>
     <input type="file" id="importInput" accept=".json" style="display:none" onchange="importData(event)">
-    <button class="btn btn-danger" style="margin-top:8px" onclick="clearAllData()">🗑 全データ削除</button>
+    <button class="btn btn-danger" onclick="clearAllData()">🗑 全データ削除</button>
   </div>
 </div>
 
-<!-- 写真モーダル -->
-<div class="modal-overlay" id="photoModal" onclick="this.classList.remove('active')">
-  <img id="photoModalImg" src="">
+<!-- モーダル -->
+<div class="modal" id="photoModal" onclick="this.classList.remove('active')">
+  <img id="photoModalImg">
 </div>
 
-<!-- ナビゲーション -->
+<!-- ナビ -->
 <div class="nav">
-  <div class="nav-item active" onclick="showPage('pageDashboard')">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
-    ホーム
+  <div class="nav-item active" onclick="showPage('pageHome')">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>ホーム
   </div>
   <div class="nav-item" onclick="showPage('pageInput')">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-    入力
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>記録
   </div>
   <div class="nav-item" onclick="showPage('pageHistory')">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg>
-    履歴
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg>履歴
   </div>
   <div class="nav-item" onclick="showPage('pageSettings')">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
-    設定
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>設定
   </div>
 </div>
 
 <script>
-const STORAGE_KEY = 'healthCheckApp';
-const defaultExamTypes = [
-  { name: '一般健康診断', intervalYears: 1 },
-  { name: '胃カメラ', intervalYears: 2 },
-  { name: '大腸カメラ', intervalYears: 3 },
-  { name: '歯科検診', intervalYears: 1 },
-  { name: '眼科検診', intervalYears: 1 },
+const SK = 'healthScheduleApp';
+const defaultExams = [
+  {name:'一般健康診断', years:1},
+  {name:'胃カメラ', years:2},
+  {name:'大腸カメラ', years:3},
+  {name:'歯科検診', years:1},
+  {name:'眼科検診', years:1},
 ];
 
-const referenceRanges = {
-  bmi: { min: 18.5, max: 24.9, unit: '' },
-  waist: { min: 0, max: 84.9, unit: 'cm', label: '腹囲' },
-  bpHigh: { min: 0, max: 129, unit: 'mmHg', label: '最高血圧' },
-  bpLow: { min: 0, max: 84, unit: 'mmHg', label: '最低血圧' },
-  wbc: { min: 3100, max: 8400, unit: '/μL', label: '白血球' },
-  rbc: { min: 435, max: 555, unit: '万/μL', label: '赤血球' },
-  hb: { min: 13.7, max: 16.8, unit: 'g/dL', label: 'ヘモグロビン' },
-  ht: { min: 40.7, max: 50.1, unit: '%', label: 'ヘマトクリット' },
-  plt: { min: 15.8, max: 34.8, unit: '万/μL', label: '血小板' },
-  ast: { min: 0, max: 30, unit: 'U/L', label: 'AST(GOT)' },
-  alt: { min: 0, max: 30, unit: 'U/L', label: 'ALT(GPT)' },
-  ggt: { min: 0, max: 50, unit: 'U/L', label: 'γ-GTP' },
-  tc: { min: 142, max: 248, unit: 'mg/dL', label: '総コレステロール' },
-  hdl: { min: 40, max: 100, unit: 'mg/dL', label: 'HDL' },
-  ldl: { min: 0, max: 139, unit: 'mg/dL', label: 'LDL' },
-  tg: { min: 0, max: 149, unit: 'mg/dL', label: '中性脂肪' },
-  glucose: { min: 70, max: 99, unit: 'mg/dL', label: '空腹時血糖' },
-  hba1c: { min: 0, max: 5.5, unit: '%', label: 'HbA1c' },
-  cre: { min: 0.65, max: 1.07, unit: 'mg/dL', label: 'クレアチニン' },
-  egfr: { min: 60, max: 999, unit: 'mL/min', label: 'eGFR' },
-  ua: { min: 2.1, max: 7.0, unit: 'mg/dL', label: '尿酸' },
+const numFields = ['height','weight','bmi','waist','bpHigh','bpLow','visionR','visionL','wbc','rbc','hb','ht','plt','ast','alt','ggt','tc','hdl','ldl','tg','glucose','hba1c','cre','egfr','ua','uProtein','uGlucose','uBlood','judgment','ecg'];
+
+const fieldLabels = {
+  height:'身長',weight:'体重',bmi:'BMI',waist:'腹囲',bpHigh:'最高血圧',bpLow:'最低血圧',
+  visionR:'視力(右)',visionL:'視力(左)',wbc:'白血球',rbc:'赤血球',hb:'Hb',ht:'Ht',plt:'血小板',
+  ast:'AST',alt:'ALT',ggt:'γ-GTP',tc:'総コレステロール',hdl:'HDL',ldl:'LDL',tg:'中性脂肪',
+  glucose:'空腹時血糖',hba1c:'HbA1c',cre:'クレアチニン',egfr:'eGFR',ua:'尿酸',
+  uProtein:'尿蛋白',uGlucose:'尿糖',uBlood:'尿潜血',judgment:'総合判定',ecg:'心電図'
 };
 
-function loadData() {
-  const d = localStorage.getItem(STORAGE_KEY);
-  if (d) return JSON.parse(d);
-  return { checkups: [], examTypes: [...defaultExamTypes], examRecords: [] };
+const refRanges = {
+  bmi:{min:18.5,max:24.9},waist:{min:0,max:84.9},bpHigh:{min:0,max:129},bpLow:{min:0,max:84},
+  wbc:{min:3100,max:8400},rbc:{min:435,max:555},hb:{min:13.7,max:16.8},ht:{min:40.7,max:50.1},plt:{min:15.8,max:34.8},
+  ast:{min:0,max:30},alt:{min:0,max:30},ggt:{min:0,max:50},
+  tc:{min:142,max:248},hdl:{min:40,max:100},ldl:{min:0,max:139},tg:{min:0,max:149},
+  glucose:{min:70,max:99},hba1c:{min:0,max:5.5},cre:{min:0.65,max:1.07},egfr:{min:60,max:999},ua:{min:2.1,max:7.0}
+};
+
+function load(){const d=localStorage.getItem(SK);return d?JSON.parse(d):{records:[],examTypes:[...defaultExams],gasUrl:''}}
+function save(d){localStorage.setItem(SK,JSON.stringify(d))}
+
+let tempPhotos=[];
+
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const pages=['pageHome','pageInput','pageHistory','pageSettings'];
+  document.querySelectorAll('.nav-item').forEach((n,i)=>n.classList.toggle('active',pages[i]===id));
+  if(id==='pageHome')renderHome();
+  if(id==='pageInput')initInput();
+  if(id==='pageHistory')renderHistory();
+  if(id==='pageSettings')renderSettings();
 }
 
-function saveData(data) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+function toggleCollapsible(el){
+  el.classList.toggle('open');
+  el.nextElementSibling.classList.toggle('open');
 }
 
-let tempPhotos = [];
-
-function showPage(pageId) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById(pageId).classList.add('active');
-  document.querySelectorAll('.nav-item').forEach((n, i) => {
-    const pages = ['pageDashboard', 'pageInput', 'pageHistory', 'pageSettings'];
-    n.classList.toggle('active', pages[i] === pageId);
-  });
-  if (pageId === 'pageDashboard') renderDashboard();
-  if (pageId === 'pageHistory') renderHistory();
-  if (pageId === 'pageSettings') renderSettings();
-  if (pageId === 'pageInput') renderExamTypeSelect();
+function calcBMI(){
+  const h=parseFloat(document.getElementById('v_height').value);
+  const w=parseFloat(document.getElementById('v_weight').value);
+  if(h>0&&w>0)document.getElementById('v_bmi').value=(w/((h/100)**2)).toFixed(1);
 }
 
-function switchInputTab(tab) {
-  document.querySelectorAll('#pageInput .tab-btn').forEach((b, i) => b.classList.toggle('active', (tab === 'checkup' ? 0 : 1) === i));
-  document.getElementById('inputCheckup').style.display = tab === 'checkup' ? 'block' : 'none';
-  document.getElementById('inputExam').style.display = tab === 'exam' ? 'block' : 'none';
-}
+// --- ホーム ---
+function renderHome(){
+  const data=load();
+  const now=new Date();
+  const alerts=document.getElementById('homeAlerts');
+  const list=document.getElementById('scheduleList');
+  let alertsHtml='';
+  let listHtml='';
 
-function switchHistoryTab(tab) {
-  document.querySelectorAll('#pageHistory .tab-btn').forEach((b, i) => b.classList.toggle('active', (tab === 'checkup' ? 0 : 1) === i));
-  document.getElementById('historyCheckupList').style.display = tab === 'checkup' ? 'block' : 'none';
-  document.getElementById('historyExamList').style.display = tab === 'exam' ? 'block' : 'none';
-  renderHistory();
-}
-
-function calcBMI() {
-  const h = parseFloat(document.getElementById('height').value);
-  const w = parseFloat(document.getElementById('weight').value);
-  if (h > 0 && w > 0) {
-    const bmi = (w / ((h / 100) ** 2)).toFixed(1);
-    document.getElementById('bmi').value = bmi;
-    const input = document.getElementById('bmi');
-    input.className = '';
-    if (bmi < 18.5 || bmi > 24.9) input.className = bmi < 16 || bmi > 30 ? 'danger' : 'warn';
+  if(data.examTypes.length===0){
+    list.innerHTML='<div class="empty">設定画面で検査種別を追加してください</div>';
+    alerts.innerHTML='';
+    return;
   }
-}
 
-function handlePhotos(e) {
-  const files = Array.from(e.target.files);
-  files.forEach(file => {
-    const reader = new FileReader();
-    reader.onload = ev => {
-      tempPhotos.push(ev.target.result);
-      renderPhotoPreview();
-    };
-    reader.readAsDataURL(file);
+  const schedules=data.examTypes.map(et=>{
+    const last=getLastExam(data,et.name);
+    const next=last?addYears(new Date(last.date),et.years):null;
+    const diff=next?Math.ceil((next-now)/(1000*60*60*24)):null;
+    return{...et,last,next,diff};
+  }).sort((a,b)=>{
+    if(a.diff===null&&b.diff===null)return 0;
+    if(a.diff===null)return 1;
+    if(b.diff===null)return -1;
+    return a.diff-b.diff;
   });
-}
 
-function renderPhotoPreview() {
-  const grid = document.getElementById('photoPreview');
-  grid.innerHTML = tempPhotos.map((p, i) => `<img src="${p}" onclick="openPhotoModal('${i}', true)">`).join('');
-}
-
-function openPhotoModal(idx, isTemp) {
-  const src = isTemp ? tempPhotos[idx] : idx;
-  document.getElementById('photoModalImg').src = src;
-  document.getElementById('photoModal').classList.add('active');
-}
-
-const checkupFields = ['height','weight','bmi','waist','bpHigh','bpLow','visionR','visionL','hearingR','hearingL','wbc','rbc','hb','ht','plt','ast','alt','ggt','tc','hdl','ldl','tg','glucose','hba1c','cre','egfr','ua','uProtein','uGlucose','uBlood','ecg','doctorComment'];
-
-function saveCheckup() {
-  const date = document.getElementById('examDate').value;
-  if (!date) { alert('受診日を入力してください'); return; }
-  const data = loadData();
-  const record = { id: Date.now(), date, judgment: document.getElementById('judgment').value, photos: [...tempPhotos] };
-  checkupFields.forEach(f => {
-    const el = document.getElementById(f);
-    record[f] = el ? el.value : '';
+  let urgentCount=0;
+  schedules.forEach(s=>{
+    if(s.diff!==null&&s.diff<=0)urgentCount++;
+    else if(s.diff!==null&&s.diff<=90)urgentCount++;
   });
-  data.checkups.push(record);
-  data.checkups.sort((a, b) => b.date.localeCompare(a.date));
-  saveData(data);
-  tempPhotos = [];
-  document.getElementById('photoPreview').innerHTML = '';
-  document.getElementById('photoInput').value = '';
-  checkupFields.concat(['examDate', 'judgment']).forEach(f => {
-    const el = document.getElementById(f);
-    if (el) el.value = '';
-  });
-  alert('保存しました');
-  showPage('pageDashboard');
-}
 
-function renderDashboard() {
-  const data = loadData();
-  const alerts = document.getElementById('dashAlerts');
-  const latest = document.getElementById('dashLatest');
-  let alertsHtml = '';
-  const now = new Date();
-
-  // 検査スケジュールアラート
-  data.examTypes.forEach(et => {
-    const lastDate = getLastExamDate(data, et.name);
-    if (lastDate) {
-      const next = new Date(lastDate);
-      next.setFullYear(next.getFullYear() + et.intervalYears);
-      const diff = Math.ceil((next - now) / (1000 * 60 * 60 * 24));
-      if (diff < 0) {
-        alertsHtml += `<div class="alert alert-red">⚠️ 「${et.name}」が${Math.abs(diff)}日超過しています</div>`;
-      } else if (diff <= 30) {
-        alertsHtml += `<div class="alert alert-yellow">📅 「${et.name}」まであと${diff}日です</div>`;
-      }
+  schedules.forEach(s=>{
+    let badge,alertClass;
+    if(!s.last){
+      badge='<span class="badge badge-blue">未受診</span>';
+    }else if(s.diff<=0){
+      badge=`<span class="badge badge-red">${Math.abs(s.diff)}日超過！</span>`;
+      alertsHtml+=`<div class="alert alert-red">⚠️ 「${s.name}」が${Math.abs(s.diff)}日超過しています。予約してください！</div>`;
+    }else if(s.diff<=90){
+      badge=`<span class="badge badge-yellow">あと${s.diff}日</span>`;
+      alertsHtml+=`<div class="alert alert-yellow">📅 「${s.name}」まであと${s.diff}日。そろそろ予約の時期です</div>`;
+    }else{
+      badge=`<span class="badge badge-green">あと${s.diff}日</span>`;
     }
+    const hospitalText=s.last&&s.last.hospital?`🏥 ${s.last.hospital}`:'';
+    listHtml+=`<div class="schedule-item">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <div class="schedule-name">${s.name}</div>
+          <div class="schedule-meta">${s.years}年ごと${s.last?' / 前回: '+s.last.date:''}</div>
+          ${s.next?`<div class="schedule-meta">次回目安: ${fmt(s.next)}</div>`:''}
+          ${hospitalText?`<div class="schedule-hospital">${hospitalText}</div>`:''}
+        </div>
+        ${badge}
+      </div>
+    </div>`;
   });
 
-  if (!alertsHtml && data.checkups.length > 0) {
-    alertsHtml = '<div class="alert alert-green">✅ 直近の検査スケジュールに問題ありません</div>';
-  }
-  alerts.innerHTML = alertsHtml;
-
-  // 最新の健診結果サマリー
-  if (data.checkups.length === 0) {
-    latest.innerHTML = '<div class="empty-state"><p>まだ健康診断の記録がありません<br>「入力」タブから記録を追加しましょう</p></div>';
-  } else {
-    const c = data.checkups[0];
-    const prev = data.checkups.length > 1 ? data.checkups[1] : null;
-    let abnormals = [];
-    Object.keys(referenceRanges).forEach(key => {
-      const val = parseFloat(c[key]);
-      if (!isNaN(val)) {
-        const ref = referenceRanges[key];
-        if (val < ref.min || val > ref.max) abnormals.push(ref.label || key);
-      }
-    });
-    latest.innerHTML = `
-      <div class="card-title">📊 最新の健康診断 (${c.date})</div>
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
-        ${c.judgment ? `<span class="judgment-badge judgment-${c.judgment}">${c.judgment}</span>` : ''}
-        <div style="font-size:13px">
-          ${c.weight ? `体重 ${c.weight}kg` : ''} ${c.bmi ? `/ BMI ${c.bmi}` : ''}
-          ${c.bpHigh ? `<br>血圧 ${c.bpHigh}/${c.bpLow}` : ''}
-        </div>
-      </div>
-      ${abnormals.length > 0 ? `<div class="alert alert-yellow" style="margin-bottom:0">⚠️ 基準値外: ${abnormals.join('、')}</div>` : '<div class="alert alert-green" style="margin-bottom:0">✅ 全項目基準値内</div>'}
-    `;
-  }
-
-  // 検査スケジュール一覧
-  const list = document.getElementById('examScheduleList');
-  list.innerHTML = data.examTypes.map(et => {
-    const lastDate = getLastExamDate(data, et.name);
-    if (!lastDate) return `<li><span>${et.name}</span><span class="badge badge-yellow">未受診</span></li>`;
-    const next = new Date(lastDate);
-    next.setFullYear(next.getFullYear() + et.intervalYears);
-    const diff = Math.ceil((next - now) / (1000 * 60 * 60 * 24));
-    let badge;
-    if (diff < 0) badge = `<span class="badge badge-red">${Math.abs(diff)}日超過</span>`;
-    else if (diff <= 30) badge = `<span class="badge badge-yellow">あと${diff}日</span>`;
-    else badge = `<span class="badge badge-green">${next.toLocaleDateString('ja-JP')}</span>`;
-    return `<li><div><div style="font-weight:600">${et.name}</div><div style="font-size:11px;color:#94a3b8">${et.intervalYears}年ごと / 前回: ${lastDate}</div></div>${badge}</li>`;
-  }).join('');
+  if(!alertsHtml&&data.records.length>0)alertsHtml='<div class="alert alert-green">✅ 直近の検査予定に問題ありません</div>';
+  alerts.innerHTML=alertsHtml;
+  list.innerHTML=listHtml||'<div class="empty">まだ受診記録がありません</div>';
 }
 
-function getLastExamDate(data, examName) {
-  if (examName === '一般健康診断' && data.checkups.length > 0) return data.checkups[0].date;
-  const records = data.examRecords.filter(r => r.type === examName).sort((a, b) => b.date.localeCompare(a.date));
-  return records.length > 0 ? records[0].date : null;
+function getLastExam(data,examName){
+  const matches=data.records.filter(r=>r.exams&&r.exams.includes(examName)).sort((a,b)=>b.date.localeCompare(a.date));
+  return matches.length>0?matches[0]:null;
 }
 
-function renderHistory() {
-  const data = loadData();
-  const checkupList = document.getElementById('historyCheckupList');
-  const examList = document.getElementById('historyExamList');
+function addYears(d,y){const r=new Date(d);r.setFullYear(r.getFullYear()+y);return r}
+function fmt(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 
-  if (data.checkups.length === 0) {
-    checkupList.innerHTML = '<div class="card"><div class="empty-state"><p>健康診断の記録がありません</p></div></div>';
-  } else {
-    checkupList.innerHTML = '<div class="card">' + data.checkups.map(c => {
-      let abnormalCount = 0;
-      Object.keys(referenceRanges).forEach(key => {
-        const val = parseFloat(c[key]);
-        if (!isNaN(val)) { const ref = referenceRanges[key]; if (val < ref.min || val > ref.max) abnormalCount++; }
+// --- 入力 ---
+function initInput(){
+  const data=load();
+  const grid=document.getElementById('examCheckboxes');
+  grid.innerHTML=data.examTypes.map(et=>`<label class="checkbox-item" onclick="this.classList.toggle('checked')"><input type="checkbox" value="${et.name}"> ${et.name}</label>`).join('');
+
+  const dl=document.getElementById('hospitalList');
+  const hospitals=[...new Set(data.records.map(r=>r.hospital).filter(Boolean))];
+  dl.innerHTML=hospitals.map(h=>`<option value="${h}">`).join('');
+
+  document.getElementById('ocrBtn').style.display='none';
+  tempPhotos=[];
+  document.getElementById('photoPreview').innerHTML='';
+}
+
+function handlePhotos(e){
+  Array.from(e.target.files).forEach(f=>{
+    const reader=new FileReader();
+    reader.onload=ev=>{tempPhotos.push(ev.target.result);renderPhotos()};
+    reader.readAsDataURL(f);
+  });
+}
+
+function renderPhotos(){
+  document.getElementById('photoPreview').innerHTML=tempPhotos.map((p,i)=>`<img src="${p}" onclick="document.getElementById('photoModalImg').src='${p}';document.getElementById('photoModal').classList.add('active')">`).join('');
+  document.getElementById('ocrBtn').style.display=tempPhotos.length>0?'block':'none';
+}
+
+async function runOCR(){
+  const data=load();
+  if(!data.gasUrl){alert('設定画面でGAS WebアプリURLを入力してください');return}
+  const btn=document.getElementById('ocrBtn');
+  btn.innerHTML='<span class="spinner"></span> 読み取り中...';
+  btn.style.pointerEvents='none';
+  try{
+    const res=await fetch(data.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'ocr',image:tempPhotos[0]})});
+    const result=await res.json();
+    if(result.values){
+      Object.entries(result.values).forEach(([k,v])=>{
+        const el=document.getElementById('v_'+k);
+        if(el)el.value=v;
       });
-      return `<div class="history-item" onclick="showDetail('${c.id}')">
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <div>
-            <div class="history-item-date">${c.date}</div>
-            <div class="history-item-summary">${c.judgment ? '判定: ' + c.judgment + ' / ' : ''}${abnormalCount > 0 ? abnormalCount + '項目が基準値外' : '全項目正常'}</div>
-          </div>
-          ${c.judgment ? `<span class="judgment-badge judgment-${c.judgment}">${c.judgment}</span>` : ''}
-        </div>
-      </div>`;
-    }).join('') + '</div>';
-  }
-
-  const examRecords = data.examRecords || [];
-  if (examRecords.length === 0) {
-    examList.innerHTML = '<div class="card"><div class="empty-state"><p>個別検査の記録がありません</p></div></div>';
-  } else {
-    const sorted = [...examRecords].sort((a, b) => b.date.localeCompare(a.date));
-    examList.innerHTML = '<div class="card">' + sorted.map(r => `
-      <div class="history-item">
-        <div class="history-item-date">${r.date} — ${r.type}</div>
-        <div class="history-item-summary">${r.memo || ''}</div>
-        <button class="btn btn-danger btn-sm" style="margin-top:4px" onclick="deleteExamRecord(${r.id})">削除</button>
-      </div>
-    `).join('') + '</div>';
-  }
+      calcBMI();
+      const body=document.getElementById('numericFields');
+      if(!body.classList.contains('open')){
+        body.previousElementSibling.classList.add('open');
+        body.classList.add('open');
+      }
+      alert('読み取り完了！数値を確認・修正してください');
+    }else{
+      alert(result.error||'読み取りに失敗しました');
+    }
+  }catch(e){alert('通信エラー: '+e.message)}
+  btn.innerHTML='🤖 写真から数値を自動読み取り';
+  btn.style.pointerEvents='auto';
 }
 
-function showDetail(id) {
-  const data = loadData();
-  const c = data.checkups.find(x => x.id == id);
-  if (!c) return;
-  const prev = data.checkups.find(x => x.date < c.date);
-  const content = document.getElementById('detailContent');
+function saveRecord(){
+  const date=document.getElementById('inputDate').value;
+  if(!date){alert('受診日を入力してください');return}
+  const checked=Array.from(document.querySelectorAll('#examCheckboxes input:checked')).map(c=>c.value);
+  if(checked.length===0){alert('受けた検査を1つ以上選択してください');return}
 
-  const fieldLabels = {
-    height: '身長', weight: '体重', bmi: 'BMI', waist: '腹囲',
-    bpHigh: '最高血圧', bpLow: '最低血圧', visionR: '視力(右)', visionL: '視力(左)',
-    hearingR: '聴力(右)', hearingL: '聴力(左)',
-    wbc: '白血球', rbc: '赤血球', hb: 'ヘモグロビン', ht: 'ヘマトクリット', plt: '血小板',
-    ast: 'AST(GOT)', alt: 'ALT(GPT)', ggt: 'γ-GTP',
-    tc: '総コレステロール', hdl: 'HDL', ldl: 'LDL', tg: '中性脂肪',
-    glucose: '空腹時血糖', hba1c: 'HbA1c', cre: 'クレアチニン', egfr: 'eGFR', ua: '尿酸',
-    uProtein: '尿蛋白', uGlucose: '尿糖', uBlood: '尿潜血',
+  const data=load();
+  const record={
+    id:Date.now(),
+    date,
+    hospital:document.getElementById('inputHospital').value.trim(),
+    exams:checked,
+    memo:document.getElementById('inputMemo').value,
+    photos:[...tempPhotos],
+    values:{}
   };
-
-  let html = `<div class="card"><div class="card-title">📊 ${c.date} の結果 ${c.judgment ? `<span class="judgment-badge judgment-${c.judgment}">${c.judgment}</span>` : ''}</div>`;
-
-  const sections = [
-    { title: '身体計測', fields: ['height','weight','bmi','waist'] },
-    { title: '血圧', fields: ['bpHigh','bpLow'] },
-    { title: '視力・聴力', fields: ['visionR','visionL','hearingR','hearingL'] },
-    { title: '血液検査', fields: ['wbc','rbc','hb','ht','plt'] },
-    { title: '肝機能', fields: ['ast','alt','ggt'] },
-    { title: '脂質', fields: ['tc','hdl','ldl','tg'] },
-    { title: '糖代謝', fields: ['glucose','hba1c'] },
-    { title: '腎機能', fields: ['cre','egfr','ua'] },
-    { title: '尿検査', fields: ['uProtein','uGlucose','uBlood'] },
-  ];
-
-  sections.forEach(sec => {
-    const hasData = sec.fields.some(f => c[f]);
-    if (!hasData) return;
-    html += `<div class="form-section-title" style="margin-top:12px">${sec.title}</div><table class="detail-table">`;
-    sec.fields.forEach(f => {
-      if (!c[f]) return;
-      const val = c[f];
-      const ref = referenceRanges[f];
-      let valClass = '';
-      let refText = '';
-      const numVal = parseFloat(val);
-      if (ref && !isNaN(numVal)) {
-        if (numVal < ref.min || numVal > ref.max) valClass = ' style="color:#dc2626;font-weight:700"';
-        refText = `<span class="ref-range">${ref.min}〜${ref.max}</span>`;
-      }
-      let trend = '';
-      if (prev && prev[f]) {
-        const pv = parseFloat(prev[f]);
-        const cv = parseFloat(val);
-        if (!isNaN(pv) && !isNaN(cv)) {
-          const diff = cv - pv;
-          if (diff > 0) trend = `<span class="trend-up">↑${diff > 0 ? '+' : ''}${diff.toFixed(1)}</span>`;
-          else if (diff < 0) trend = `<span class="trend-down">↓${diff.toFixed(1)}</span>`;
-          else trend = '→';
-        }
-      }
-      html += `<tr><td>${fieldLabels[f] || f}</td><td${valClass}>${val} ${refText}</td><td>${trend}</td></tr>`;
-    });
-    html += '</table>';
+  numFields.forEach(f=>{
+    const el=document.getElementById('v_'+f);
+    if(el&&el.value)record.values[f]=el.value;
   });
+  data.records.push(record);
+  data.records.sort((a,b)=>b.date.localeCompare(a.date));
+  save(data);
 
-  if (c.ecg) html += `<div class="form-section-title" style="margin-top:12px">心電図</div><p style="font-size:13px;padding:4px 0">${c.ecg}</p>`;
-  if (c.doctorComment) html += `<div class="form-section-title" style="margin-top:12px">医師コメント</div><p style="font-size:13px;padding:4px 0">${c.doctorComment}</p>`;
+  document.getElementById('inputDate').value='';
+  document.getElementById('inputHospital').value='';
+  document.getElementById('inputMemo').value='';
+  document.querySelectorAll('#examCheckboxes input').forEach(c=>{c.checked=false;c.parentElement.classList.remove('checked')});
+  numFields.forEach(f=>{const el=document.getElementById('v_'+f);if(el)el.value=''});
+  tempPhotos=[];
+  document.getElementById('photoPreview').innerHTML='';
+  document.getElementById('ocrBtn').style.display='none';
 
-  if (c.photos && c.photos.length > 0) {
-    html += `<div class="form-section-title" style="margin-top:12px">写真</div><div class="photo-grid">`;
-    c.photos.forEach(p => html += `<img src="${p}" onclick="openPhotoModal('${p}', false)">`);
-    html += '</div>';
-  }
-
-  html += '</div>';
-  html += `<button class="btn btn-danger" style="margin-top:8px" onclick="deleteCheckup(${c.id})">🗑 この記録を削除</button>`;
-  content.innerHTML = html;
-  showPage('pageDetail');
+  alert('保存しました！');
+  showPage('pageHome');
 }
 
-function deleteCheckup(id) {
-  if (!confirm('この記録を削除しますか？')) return;
-  const data = loadData();
-  data.checkups = data.checkups.filter(c => c.id !== id);
-  saveData(data);
-  showPage('pageHistory');
-}
+// --- 履歴 ---
+function renderHistory(){
+  const data=load();
+  const filter=document.getElementById('historyFilter');
+  const allExams=[...new Set(data.examTypes.map(e=>e.name))];
+  const currentVal=filter.value;
+  filter.innerHTML='<option value="">すべて表示</option>'+allExams.map(e=>`<option value="${e}">${e}</option>`).join('');
+  filter.value=currentVal;
 
-function deleteExamRecord(id) {
-  if (!confirm('この記録を削除しますか？')) return;
-  const data = loadData();
-  data.examRecords = data.examRecords.filter(r => r.id !== id);
-  saveData(data);
-  renderHistory();
-}
+  let records=data.records;
+  if(filter.value)records=records.filter(r=>r.exams&&r.exams.includes(filter.value));
 
-function renderSettings() {
-  const data = loadData();
-  const list = document.getElementById('intervalList');
-  list.innerHTML = data.examTypes.map((et, i) => `
-    <div class="interval-item">
-      <input type="text" value="${et.name}" onchange="updateExamType(${i}, 'name', this.value)">
-      <input type="number" value="${et.intervalYears}" min="1" max="10" onchange="updateExamType(${i}, 'intervalYears', parseInt(this.value))">
-      <span style="font-size:12px;white-space:nowrap">年ごと</span>
-      <button onclick="removeExamType(${i})">✕</button>
+  const list=document.getElementById('historyList');
+  if(records.length===0){list.innerHTML='<div class="empty">受診記録がありません</div>';return}
+
+  list.innerHTML=records.map(r=>`
+    <div class="history-item" onclick="showDetail(${r.id})">
+      <div class="history-date">${r.date}</div>
+      ${r.hospital?`<div class="history-hospital">🏥 ${r.hospital}</div>`:''}
+      <div class="history-badges">${r.exams.map(e=>`<span class="badge badge-green">${e}</span>`).join('')}</div>
+      ${r.memo?`<div style="font-size:11px;color:#94a3b8;margin-top:3px">${r.memo.substring(0,40)}${r.memo.length>40?'...':''}</div>`:''}
     </div>
   `).join('');
 }
 
-function updateExamType(i, field, value) {
-  const data = loadData();
-  data.examTypes[i][field] = value;
-  saveData(data);
+function showDetail(id){
+  const data=load();
+  const r=data.records.find(x=>x.id===id);
+  if(!r)return;
+  const prev=data.records.find(x=>x.date<r.date);
+  let html=`<div class="card">
+    <div class="card-title">📊 ${r.date} の記録</div>
+    ${r.hospital?`<div style="font-size:12px;color:#64748b;margin-bottom:8px">🏥 ${r.hospital}</div>`:''}
+    <div style="margin-bottom:8px">${r.exams.map(e=>`<span class="badge badge-green">${e}</span> `).join('')}</div>
+    ${r.memo?`<div style="font-size:12px;color:#64748b;margin-bottom:10px;padding:8px;background:#f8fafc;border-radius:6px">${r.memo}</div>`:''}`;
+
+  if(r.values&&Object.keys(r.values).length>0){
+    html+='<table class="detail-table">';
+    numFields.forEach(f=>{
+      if(!r.values[f])return;
+      const v=r.values[f];
+      const ref=refRanges[f];
+      const nv=parseFloat(v);
+      let cls='';
+      if(ref&&!isNaN(nv)&&(nv<ref.min||nv>ref.max))cls=' style="color:#dc2626;font-weight:700"';
+      let trend='';
+      if(prev&&prev.values&&prev.values[f]){
+        const pv=parseFloat(prev.values[f]);
+        if(!isNaN(pv)&&!isNaN(nv)){
+          const d=nv-pv;
+          if(d>0)trend=`<span class="trend-up">↑+${d.toFixed(1)}</span>`;
+          else if(d<0)trend=`<span class="trend-down">↓${d.toFixed(1)}</span>`;
+          else trend='→';
+        }
+      }
+      html+=`<tr><td>${fieldLabels[f]||f}</td><td${cls}>${v}</td><td>${trend}</td></tr>`;
+    });
+    html+='</table>';
+  }
+
+  if(r.photos&&r.photos.length>0){
+    html+='<div style="margin-top:10px"><div class="section-title">写真</div><div class="photo-grid">';
+    r.photos.forEach(p=>html+=`<img src="${p}" onclick="document.getElementById('photoModalImg').src='${p}';document.getElementById('photoModal').classList.add('active')">`);
+    html+='</div></div>';
+  }
+  html+='</div>';
+  html+=`<button class="btn btn-danger" style="margin-top:8px" onclick="deleteRecord(${r.id})">🗑 削除</button>`;
+  document.getElementById('detailContent').innerHTML=html;
+  showPage('pageDetail');
 }
 
-function removeExamType(i) {
-  const data = loadData();
-  data.examTypes.splice(i, 1);
-  saveData(data);
+function deleteRecord(id){
+  if(!confirm('この記録を削除しますか？'))return;
+  const data=load();
+  data.records=data.records.filter(r=>r.id!==id);
+  save(data);
+  showPage('pageHistory');
+}
+
+// --- 設定 ---
+function renderSettings(){
+  const data=load();
+  document.getElementById('gasUrl').value=data.gasUrl||'';
+  const list=document.getElementById('intervalList');
+  list.innerHTML=data.examTypes.map((et,i)=>`
+    <div class="interval-item">
+      <input type="text" value="${et.name}" onchange="updateExam(${i},'name',this.value)">
+      <input type="number" value="${et.years}" min="1" max="10" onchange="updateExam(${i},'years',parseInt(this.value))">
+      <span style="font-size:11px;white-space:nowrap">年ごと</span>
+      <button onclick="removeExam(${i})">✕</button>
+    </div>
+  `).join('');
+}
+
+function updateExam(i,f,v){const d=load();d.examTypes[i][f]=v;save(d)}
+function removeExam(i){if(!confirm('削除しますか？'))return;const d=load();d.examTypes.splice(i,1);save(d);renderSettings()}
+function addExamType(){
+  const name=document.getElementById('newExamName').value.trim();
+  if(!name)return;
+  const d=load();d.examTypes.push({name,years:1});save(d);
+  document.getElementById('newExamName').value='';
   renderSettings();
 }
+function saveGasUrl(){const d=load();d.gasUrl=document.getElementById('gasUrl').value.trim();save(d)}
 
-function addExamType() {
-  const name = document.getElementById('newExamName').value.trim();
-  if (!name) return;
-  const data = loadData();
-  data.examTypes.push({ name, intervalYears: 1 });
-  saveData(data);
-  document.getElementById('newExamName').value = '';
-  renderSettings();
+async function syncToGAS(){
+  const data=load();
+  if(!data.gasUrl){alert('GAS WebアプリURLを入力してください');return}
+  try{
+    const schedules=data.examTypes.map(et=>{
+      const last=getLastExam(data,et.name);
+      return{name:et.name,years:et.years,lastDate:last?last.date:null,hospital:last?last.hospital:''};
+    });
+    const res=await fetch(data.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'sync',schedules})});
+    const result=await res.json();
+    alert(result.message||'同期完了！');
+  }catch(e){alert('通信エラー: '+e.message)}
 }
 
-function renderExamTypeSelect() {
-  const data = loadData();
-  const sel = document.getElementById('examType');
-  sel.innerHTML = '<option value="">選択してください</option>' + data.examTypes.filter(e => e.name !== '一般健康診断').map(e => `<option value="${e.name}">${e.name}</option>`).join('');
+async function testNotify(){
+  const data=load();
+  if(!data.gasUrl){alert('GAS WebアプリURLを入力してください');return}
+  try{
+    const res=await fetch(data.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'test'})});
+    const result=await res.json();
+    alert(result.message||'テスト通知を送信しました');
+  }catch(e){alert('通信エラー: '+e.message)}
 }
 
-function onExamTypeChange() {}
-
-function saveExamRecord() {
-  const type = document.getElementById('examType').value;
-  const date = document.getElementById('examItemDate').value;
-  if (!type || !date) { alert('検査種別と受診日を入力してください'); return; }
-  const data = loadData();
-  if (!data.examRecords) data.examRecords = [];
-  data.examRecords.push({ id: Date.now(), type, date, memo: document.getElementById('examMemo').value });
-  saveData(data);
-  document.getElementById('examType').value = '';
-  document.getElementById('examItemDate').value = '';
-  document.getElementById('examMemo').value = '';
-  alert('保存しました');
-}
-
-function exportData() {
-  const data = loadData();
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = '健康診断データ_' + new Date().toISOString().slice(0, 10) + '.json';
+function exportData(){
+  const d=load();
+  const blob=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='健康診断データ_'+new Date().toISOString().slice(0,10)+'.json';
   a.click();
 }
 
-function importData(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = ev => {
-    try {
-      const data = JSON.parse(ev.target.result);
-      if (data.checkups) { saveData(data); alert('インポートしました'); renderDashboard(); }
-      else alert('無効なデータです');
-    } catch { alert('ファイルの読み込みに失敗しました'); }
+function importData(e){
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    try{const d=JSON.parse(ev.target.result);if(d.records||d.examTypes){save(d);alert('インポート完了');showPage('pageHome')}else alert('無効なデータです')}
+    catch{alert('読み込み失敗')}
   };
-  reader.readAsText(file);
+  r.readAsText(f);
 }
 
-function clearAllData() {
-  if (!confirm('全データを削除しますか？この操作は取り消せません。')) return;
-  if (!confirm('本当に削除しますか？')) return;
-  localStorage.removeItem(STORAGE_KEY);
+function clearAllData(){
+  if(!confirm('全データを削除しますか？'))return;
+  if(!confirm('本当に削除しますか？'))return;
+  localStorage.removeItem(SK);
   alert('削除しました');
-  showPage('pageDashboard');
+  showPage('pageHome');
 }
 
-// 初期化
-renderDashboard();
+renderHome();
 </script>
 </body>
 </html>
