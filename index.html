@@ -634,9 +634,8 @@ async function syncToGAS(){
       const last=getLastExam(data,et.name);
       return{name:et.name,years:et.years,lastDate:last?last.date:null,hospital:last?last.hospital:''};
     });
-    const res=await fetch(data.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'sync',schedules})});
-    const result=await res.json();
-    alert(result.message||'同期完了！');
+    await fetch(data.gasUrl,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'sync',schedules})});
+    alert('同期完了！GASにスケジュールを送信しました');
   }catch(e){alert('通信エラー: '+e.message)}
 }
 
@@ -644,9 +643,8 @@ async function testNotify(){
   const data=load();
   if(!data.gasUrl){alert('GAS WebアプリURLを入力してください');return}
   try{
-    const res=await fetch(data.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'test'})});
-    const result=await res.json();
-    alert(result.message||'テスト通知を送信しました');
+    await fetch(data.gasUrl,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'test'})});
+    alert('テスト通知を送信しました！LINEを確認してください');
   }catch(e){alert('通信エラー: '+e.message)}
 }
 
